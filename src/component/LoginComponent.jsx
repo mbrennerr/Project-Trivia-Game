@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 // import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import ConfigComponent from './ConfigComponent';
+import getToken from '../service/api';
+
 
 class LoginComponent extends Component {
   constructor(props) {
@@ -10,9 +12,17 @@ class LoginComponent extends Component {
       name: '',
       email: '',
       redirect: false,
+      token: '',
     };
     this.HandleOnChange = this.HandleOnChange.bind(this);
     this.HandleOnClick = this.HandleOnClick.bind(this);
+    // this.tokenForLocalStorage = this.tokenForLocalStorage.bind(this);
+  }
+
+  // função para pegar o token via api
+  componentDidMount() {
+    getToken()
+      .then((result) => this.setState({ token: result.token }));
   }
 
   HandleOnChange({ target }) {
@@ -23,13 +33,16 @@ class LoginComponent extends Component {
   }
 
   HandleOnClick() {
+    const { token } = this.state;
+    localStorage.setItem('token', token);
     this.setState({
       redirect: true,
     });
   }
 
   render() {
-    const { name, email, redirect } = this.state;
+    const { name, email, redirect, token } = this.state;
+    console.log(token);
     return (
       <div>
         <form>
