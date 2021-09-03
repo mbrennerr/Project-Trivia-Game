@@ -4,7 +4,11 @@ import md5 from 'crypto-js/md5';
 // import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router';
+
 import { clickLogin, fetchGravatar } from '../actions/loginActions';
+import ConfigComponent from './ConfigComponent';
+import getToken from '../service/api';
+
 
 class LoginComponent extends Component {
   constructor(props) {
@@ -13,9 +17,17 @@ class LoginComponent extends Component {
       name: '',
       email: '',
       redirect: false,
+      token: '',
     };
     this.HandleOnChange = this.HandleOnChange.bind(this);
     this.HandleOnClick = this.HandleOnClick.bind(this);
+    // this.tokenForLocalStorage = this.tokenForLocalStorage.bind(this);
+  }
+
+  // função para pegar o token via api
+  componentDidMount() {
+    getToken()
+      .then((result) => this.setState({ token: result.token }));
   }
 
   HandleOnChange({ target }) {
@@ -27,7 +39,8 @@ class LoginComponent extends Component {
 
   HandleOnClick() {
     const { login, image } = this.props;
-    const { email } = this.state;
+    const { email, token } = this.state;
+    localStorage.setItem('token', token);
     this.setState({
       redirect: true,
     });
@@ -36,7 +49,8 @@ class LoginComponent extends Component {
   }
 
   render() {
-    const { name, email, redirect } = this.state;
+    const { name, email, redirect, token } = this.state;
+    console.log(token);
     return (
       <div>
         <form>
@@ -72,8 +86,9 @@ class LoginComponent extends Component {
           >
             Jogar
           </button>
+          <ConfigComponent />
         </form>
-        {redirect ? <Redirect to="/game" /> : '' }
+        {redirect ? <Redirect to="/game" /> : ''}
       </div>
     );
   }
