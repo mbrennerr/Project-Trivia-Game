@@ -17,13 +17,11 @@ class LoginComponent extends Component {
     // this.tokenForLocalStorage = this.tokenForLocalStorage.bind(this);
   }
 
-  // função para pegar o token e armazenar
+  // função para pegar o token via api
   componentDidMount() {
     getToken()
       .then((result) => this.setState({ token: result.token }));
   }
-
-  //= ====================================
 
   HandleOnChange({ target }) {
     const { name, value } = target;
@@ -35,7 +33,6 @@ class LoginComponent extends Component {
   HandleOnClick() {
     const { token } = this.state;
     localStorage.setItem('token', token);
-    console.log('funciona');
     this.setState({
       redirect: true,
     });
