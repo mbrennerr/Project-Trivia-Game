@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 class Game extends Component {
   render() {
@@ -6,7 +6,7 @@ class Game extends Component {
       <div>
         essa é a pagina do jogo
       </div>
-    )
+    );
   }
 }
 
