@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import md5 from 'crypto-js/md5';
 // import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { Redirect } from 'react-router';
+import { clickLogin, fetchGravatar } from '../actions/loginActions';
 
 class LoginComponent extends Component {
   constructor(props) {
@@ -22,9 +26,13 @@ class LoginComponent extends Component {
   }
 
   HandleOnClick() {
+    const { login, image } = this.props;
+    const { email } = this.state;
     this.setState({
       redirect: true,
     });
+    login(this.state);
+    image(md5(email).toString());
   }
 
   render() {
@@ -71,4 +79,13 @@ class LoginComponent extends Component {
   }
 }
 
-export default LoginComponent;
+LoginComponent.propTypes = {
+  image: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired,
+};
+const mapDispatchToProps = (dispatch) => ({
+  login: (payload) => dispatch(clickLogin(payload)),
+  image: (payload) => dispatch(fetchGravatar(payload)),
+});
+
+export default connect(null, mapDispatchToProps)(LoginComponent);
