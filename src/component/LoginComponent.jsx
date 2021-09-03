@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 // import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
+import ConfigComponent from './ConfigComponent';
 
 class LoginComponent extends Component {
   constructor(props) {
@@ -64,8 +65,9 @@ class LoginComponent extends Component {
           >
             Jogar
           </button>
+          <ConfigComponent />
         </form>
-        {redirect ? <Redirect to="/game" /> : '' }
+        {redirect ? <Redirect to="/game" /> : ''}
       </div>
     );
   }
