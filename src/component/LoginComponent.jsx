@@ -9,14 +9,10 @@ import { clickLogin, fetchGravatar } from '../actions/loginActions';
 import ConfigComponent from './ConfigComponent';
 import getToken from '../service/api';
 
-
 class LoginComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      email: '',
-      redirect: false,
       token: '',
     };
     this.HandleOnChange = this.HandleOnChange.bind(this);
@@ -49,8 +45,7 @@ class LoginComponent extends Component {
   }
 
   render() {
-    const { name, email, redirect, token } = this.state;
-    console.log(token);
+    const { name, email, redirect } = this.state;
     return (
       <div>
         <form>
