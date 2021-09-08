@@ -45,12 +45,14 @@ class GamePage extends React.Component {
         <h2 data-testid="question-text">{results[index].question}</h2>
         {allAnswers.map((answer) => (
           (answer === correctAnswer
-            ? <button data-testid="correct-answer" type="button" key={ answer }>
-              { answer }
-            </button>
-            : <button data-testid="wrong-answer-index" type="button" key={ answer }>
-              { answer }
-            </button>)
+            ? (
+              <button data-testid="correct-answer" type="button" key={ answer }>
+                { answer }
+              </button>)
+            : (
+              <button data-testid="wrong-answer-index" type="button" key={ answer }>
+                { answer }
+              </button>))
         ))}
       </div>);
     // <h2>{allAnswers[0]}</h2>
