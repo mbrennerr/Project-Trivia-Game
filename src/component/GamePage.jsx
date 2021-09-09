@@ -8,9 +8,11 @@ class GamePage extends React.Component {
       timer: 30,
       data: [],
       questoesAtuais: [],
+      nextQuestion: false,
     };
     this.getQuestions = this.getQuestions.bind(this);
     this.handleOnClick = this.handleOnClick.bind(this);
+    this.handleOnClickResp = this.handleOnClickResp.bind(this);
   }
 
   async componentDidMount() {
@@ -22,6 +24,7 @@ class GamePage extends React.Component {
       this.setState((prevState) => ({
         timer: prevState.timer === 0 ? 0 : prevState.timer - ONE,
         disabled: prevState.timer === 0 ? itsTrue : false,
+        nextQuestion: prevState.timer === 0 ? itsTrue : false,
       }));
     }, ONE_SECOND);
   }
@@ -54,13 +57,27 @@ class GamePage extends React.Component {
 
   handleOnClick() {
     this.setState((prevState) => ({
+      timer: 30,
       index: prevState.index + 1,
     }));
     this.mixQuestions();
   }
 
+  handleOnClickResp() {
+    this.setState({
+      timer: 0,
+    });
+  }
+
   render() {
-    const { timer, correctAnswer, disabled, data, index, questoesAtuais } = this.state;
+    const {
+      timer,
+      correctAnswer,
+      disabled,
+      data,
+      index,
+      questoesAtuais,
+      nextQuestion } = this.state;
     return (
       <div>
         <h1>GamePage</h1>
@@ -76,7 +93,7 @@ class GamePage extends React.Component {
           (answer === correctAnswer
             ? (
               <button
-                // onClick={ this.handleOnClick }
+                onClick={ this.handleOnClickResp }
                 data-testid="correct-answer"
                 type="button"
                 key={ answer }
@@ -86,7 +103,7 @@ class GamePage extends React.Component {
               </button>)
             : (
               <button
-                // onClick={ this.handleOnClick }
+                onClick={ this.handleOnClickResp }
                 data-testid="wrong-answer-index"
                 type="button"
                 key={ answer }
@@ -94,7 +111,10 @@ class GamePage extends React.Component {
               >
                 { answer }
               </button>))
+
         ))}
+        { nextQuestion === true
+          ? <button type="button" data-testid="btn-next" onClick={ this.handleOnClick }>Proxíma</button> : ''}
       </div>
     );
   }
