@@ -75,11 +75,9 @@ class GamePage extends React.Component {
   showAnswers() {
     const correct = document.getElementsByClassName('correct');
     const incorrect = document.getElementsByClassName('incorrect');
-    console.log(incorrect.length);
     correct[0].className = 'rightAnswer';
     for (let i = 0; i <= incorrect.length; i += 1) {
       incorrect[i].className = 'wrongAnswer';
-      console.log(i);
     }
   }
 
