@@ -16,6 +16,7 @@ class GamePage extends React.Component {
     this.getQuestions = this.getQuestions.bind(this);
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnClickResp = this.handleOnClickResp.bind(this);
+    this.showAnswers = this.showAnswers.bind(this);
   }
 
   async componentDidMount() {
@@ -75,6 +76,17 @@ class GamePage extends React.Component {
     this.setState({
       timer: 0,
     });
+    this.showAnswers();
+  }
+
+  // função que mostra cores das respostas
+  showAnswers() {
+    const correct = document.getElementsByClassName('correct');
+    const incorrect = document.getElementsByClassName('incorrect');
+    correct[0].className = 'rightAnswer';
+    for (let i = 0; i <= incorrect.length; i += 1) {
+      incorrect[i].className = 'wrongAnswer';
+    }
   }
 
   render() {
@@ -93,28 +105,40 @@ class GamePage extends React.Component {
               <h2 data-testid="question-text">{data[index].question}</h2>
             </div>)
           : ''}
-        {questoesAtuais.sort().map((answer, i) => (
-          <button
-            onClick={ this.handleOnClickResp }
-            data-testid={ answer === questoesCorretas
-              ? 'correct-answer' : `wrong-answer-${i}` }
-            type="button"
-            key={ answer }
-            disabled={ disabled }
-          >
-            { answer }
-          </button>
-        ))}
-        { nextQuestion === true
-          ? (
+
+        {questoesAtuais.sort().map((answer) => (
+          (answer === correctAnswer ? (
             <button
+              onClick={ this.handleOnClickResp }
+              data-testid="correct-answer"
               type="button"
-              data-testid="btn-next"
-              onClick={ this.handleOnClick }
+              key={ answer }
+              disabled={ disabled }
+              className="correct"
             >
-              Proxíma
+              { answer }
             </button>)
-          : '' }
+            : (
+              <button
+                onClick={ this.handleOnClickResp }
+                data-testid="wrong-answer-index"
+                type="button"
+                key={ answer }
+                disabled={ disabled }
+                className="incorrect"
+              >
+                { answer }
+              </button>))
+        ))}
+        { nextQuestion === true ? (
+          <button
+            type="button"
+            data-testid="btn-next"
+            onClick={ this.handleOnClick }
+          >
+            Proxíma
+          </button>)
+          : ''}
       </div>
     );
   }
