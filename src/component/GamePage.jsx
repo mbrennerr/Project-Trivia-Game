@@ -71,16 +71,10 @@ class GamePage extends React.Component {
 
   render() {
     const {
-      timer,
-      correctAnswer,
-      disabled,
-      data,
-      index,
-      questoesAtuais,
+      timer, correctAnswer, disabled, data, index, questoesAtuais,
       nextQuestion } = this.state;
     return (
       <div>
-        <h1>GamePage</h1>
         <h3>{ timer }</h3>
         {data.length > 0
           ? (
@@ -111,10 +105,17 @@ class GamePage extends React.Component {
               >
                 { answer }
               </button>))
-
         ))}
         { nextQuestion === true
-          ? <button type="button" data-testid="btn-next" onClick={ this.handleOnClick }>Proxíma</button> : ''}
+          ? (
+            <button
+              type="button"
+              data-testid="btn-next"
+              onClick={ this.handleOnClick }
+            >
+              Proxíma
+            </button>)
+          : ''}
       </div>
     );
   }
