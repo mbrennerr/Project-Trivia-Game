@@ -4,77 +4,118 @@ class GamePage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      questions: [],
       index: 0,
+      timer: 30,
+      data: [],
+      questoesAtuais: [],
+      nextQuestion: false,
     };
-    this.sortAnswers = this.sortAnswers.bind(this);
     this.getQuestions = this.getQuestions.bind(this);
+    this.handleOnClick = this.handleOnClick.bind(this);
+    this.handleOnClickResp = this.handleOnClickResp.bind(this);
   }
 
   async componentDidMount() {
+    const ONE = 1;
+    const itsTrue = true;
     this.getQuestions();
-    // const token = localStorage.getItem('token');
-    // const requestReturn = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
-    // const questions = await requestReturn.json();
-    // this.setState({
-    //   questions,
-    // });
-    // console.log(questions.results[0]);
-    // return questions;
+    const ONE_SECOND = 1000;
+    setInterval(() => {
+      this.setState((prevState) => ({
+        timer: prevState.timer === 0 ? 0 : prevState.timer - ONE,
+        disabled: prevState.timer === 0 ? itsTrue : false,
+        nextQuestion: prevState.timer === 0 ? itsTrue : false,
+      }));
+    }, ONE_SECOND);
   }
 
   async getQuestions() {
     const token = localStorage.getItem('token');
     const requestReturn = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
     const questions = await requestReturn.json();
+    // organizando as questões pro state
+    const incorretas = questions.results[0].incorrect_answers;
+    const correta = questions.results[0].correct_answer;
+    const allAnswers = [...incorretas, correta];
     this.setState({
-      questions,
+      questoesAtuais: allAnswers,
+      correctAnswer: correta,
+      data: questions.results,
     });
   }
 
-  sortAnswers(results) {
-    // console.log(results);
-    const { index } = this.state;
-    const correctAnswer = results[index].correct_answer;
-    const allAnswers = results[index].incorrect_answers;
-    allAnswers.push(correctAnswer);
-    allAnswers.sort();
-    return (
-      <div>
-        <h2 data-testid="question-category">{results[index].category}</h2>
-        <h2 data-testid="question-text">{results[index].question}</h2>
-        {allAnswers.map((answer) => (
-          (answer === correctAnswer
-            ? (
-              <button data-testid="correct-answer" type="button" key={ answer }>
-                { answer }
-              </button>)
-            : (
-              <button data-testid="wrong-answer-index" type="button" key={ answer }>
-                { answer }
-              </button>))
-        ))}
-      </div>);
-    // <h2>{allAnswers[0]}</h2>
+  mixQuestions() {
+    const { index, data } = this.state;
+    const newIndex = index + 1;
+    const questoesIncorretas = data[newIndex].incorrect_answers;
+    const questoesCorretas = data[newIndex].correct_answer;
+    const questoesAtuais = [...questoesIncorretas, questoesCorretas];
+    this.setState({
+      questoesAtuais: [...questoesAtuais],
+    });
+  }
+
+  handleOnClick() {
+    this.setState((prevState) => ({
+      timer: 30,
+      index: prevState.index + 1,
+    }));
+    this.mixQuestions();
+  }
+
+  handleOnClickResp() {
+    this.setState({
+      timer: 0,
+    });
   }
 
   render() {
-    const { questions } = this.state;
-    // console.log(questions);
+    const {
+      timer, correctAnswer, disabled, data, index, questoesAtuais,
+      nextQuestion } = this.state;
     return (
       <div>
-        <h1>GamePage</h1>
-        { questions.results !== undefined
-          ? this.sortAnswers(questions.results)
-        // <div>
-        //   <h2 data-testid="question-category">{questions.results[0].category}</h2>
-        //   {/* <h2 data-testid="question-text">{questions.results[0].question}</h2>
-        //   <h4 data-testid="correct-answer">{questions.results[0].correct_answer}</h4>
-        //   <h4 data-testid="wrong-answer-0">{questions.results[0].incorrect_answers[0]}</h4>
-        //   <h4 data-testid="wrong-answer-1">{questions.results[0].incorrect_answers[1]}</h4>
-        //   <h4 data-testid="wrong-answer-2">{questions.results[0].incorrect_answers[2]}</h4> */}
-        // </div>
-          : '' }
+        <h3>{ timer }</h3>
+        {data.length > 0
+          ? (
+            <div>
+              <h2 data-testid="question-category">{data[index].category}</h2>
+              <h2 data-testid="question-text">{data[index].question}</h2>
+            </div>)
+          : ''}
+        {questoesAtuais.sort().map((answer) => (
+          (answer === correctAnswer
+            ? (
+              <button
+                onClick={ this.handleOnClickResp }
+                data-testid="correct-answer"
+                type="button"
+                key={ answer }
+                disabled={ disabled }
+              >
+                { answer }
+              </button>)
+            : (
+              <button
+                onClick={ this.handleOnClickResp }
+                data-testid="wrong-answer-index"
+                type="button"
+                key={ answer }
+                disabled={ disabled }
+              >
+                { answer }
+              </button>))
+        ))}
+        { nextQuestion === true
+          ? (
+            <button
+              type="button"
+              data-testid="btn-next"
+              onClick={ this.handleOnClick }
+            >
+              Proxíma
+            </button>)
+          : ''}
       </div>
     );
   }
