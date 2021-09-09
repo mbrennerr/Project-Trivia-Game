@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router';
 
 class GamePage extends React.Component {
   constructor(props) {
@@ -9,6 +10,8 @@ class GamePage extends React.Component {
       data: [],
       questoesAtuais: [],
       nextQuestion: false,
+      link: false,
+      questions: 0,
     };
     this.getQuestions = this.getQuestions.bind(this);
     this.handleOnClick = this.handleOnClick.bind(this);
@@ -39,26 +42,31 @@ class GamePage extends React.Component {
     const allAnswers = [...incorretas, correta];
     this.setState({
       questoesAtuais: allAnswers,
-      correctAnswer: correta,
+      questoesCorretas: correta,
       data: questions.results,
     });
   }
 
   mixQuestions() {
-    const { index, data } = this.state;
-    const newIndex = index + 1;
+    const { questions, data } = this.state;
+    const newIndex = questions + 1;
     const questoesIncorretas = data[newIndex].incorrect_answers;
     const questoesCorretas = data[newIndex].correct_answer;
     const questoesAtuais = [...questoesIncorretas, questoesCorretas];
     this.setState({
       questoesAtuais: [...questoesAtuais],
+      questoesCorretas: [questoesCorretas],
     });
   }
 
   handleOnClick() {
+    const THREE = 3;
+    const FOUR = 4;
     this.setState((prevState) => ({
       timer: 30,
-      index: prevState.index + 1,
+      index: prevState.index >= THREE ? FOUR : prevState.index + 1,
+      questions: prevState.questions >= THREE ? THREE : prevState.questions + 1,
+      link: prevState.questions === THREE && prevState.index === FOUR,
     }));
     this.mixQuestions();
   }
@@ -71,10 +79,12 @@ class GamePage extends React.Component {
 
   render() {
     const {
-      timer, correctAnswer, disabled, data, index, questoesAtuais,
-      nextQuestion } = this.state;
+      timer, questoesCorretas, disabled, data, index, questoesAtuais,
+      nextQuestion, link } = this.state;
     return (
       <div>
+        { link ? <Redirect to="/feedback" /> : ''}
+
         <h3>{ timer }</h3>
         {data.length > 0
           ? (
@@ -83,28 +93,17 @@ class GamePage extends React.Component {
               <h2 data-testid="question-text">{data[index].question}</h2>
             </div>)
           : ''}
-        {questoesAtuais.sort().map((answer) => (
-          (answer === correctAnswer
-            ? (
-              <button
-                onClick={ this.handleOnClickResp }
-                data-testid="correct-answer"
-                type="button"
-                key={ answer }
-                disabled={ disabled }
-              >
-                { answer }
-              </button>)
-            : (
-              <button
-                onClick={ this.handleOnClickResp }
-                data-testid="wrong-answer-index"
-                type="button"
-                key={ answer }
-                disabled={ disabled }
-              >
-                { answer }
-              </button>))
+        {questoesAtuais.sort().map((answer, i) => (
+          <button
+            onClick={ this.handleOnClickResp }
+            data-testid={ answer === questoesCorretas
+              ? 'correct-answer' : `wrong-answer-${i}` }
+            type="button"
+            key={ answer }
+            disabled={ disabled }
+          >
+            { answer }
+          </button>
         ))}
         { nextQuestion === true
           ? (
@@ -115,7 +114,7 @@ class GamePage extends React.Component {
             >
               Proxíma
             </button>)
-          : ''}
+          : '' }
       </div>
     );
   }
