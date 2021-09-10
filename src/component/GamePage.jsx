@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import { saveScore } from '../actions/loginActions';
 import { shuffleArray } from '../service/questions';
@@ -13,11 +14,14 @@ class GamePage extends React.Component {
       data: [],
       questoesAtuais: [],
       nextQuestion: false,
+      link: false,
+      questions: 0,
     };
     this.getQuestions = this.getQuestions.bind(this);
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnClickResp = this.handleOnClickResp.bind(this);
     this.handleOnClickWrong = this.handleOnClickWrong.bind(this);
+    this.showAnswers = this.showAnswers.bind(this);
   }
 
   async componentDidMount() {
@@ -50,10 +54,11 @@ class GamePage extends React.Component {
     });
   }
 
-  mixQuestions(nextIndex) {
-    const { data } = this.state;
-    const questoesIncorretas = data[nextIndex].incorrect_answers;
-    const questaoCorreta = data[nextIndex].correct_answer;
+  mixQuestions() {
+    const { data, questions } = this.state;
+    const newIndex = questions + 1;
+    const questoesIncorretas = data[newIndex].incorrect_answers;
+    const questaoCorreta = data[newIndex].correct_answer;
     const questoesAtuais = [...questoesIncorretas, questaoCorreta];
     this.setState({
       questoesAtuais: shuffleArray(questoesAtuais),
@@ -62,13 +67,25 @@ class GamePage extends React.Component {
   }
 
   handleOnClick() {
-    const { index } = this.state;
-    const nextIndex = index + 1;
-    this.setState({
+    const THREE = 3;
+    const FOUR = 4;
+    this.setState((prevState) => ({
       timer: 30,
-      index: nextIndex,
-    });
-    this.mixQuestions(nextIndex);
+      index: prevState.index >= THREE ? FOUR : prevState.index + 1,
+      questions: prevState.questions >= THREE ? THREE : prevState.questions + 1,
+      link: prevState.questions === THREE && prevState.index === FOUR,
+    }));
+    this.mixQuestions();
+  }
+
+  // função que mostra cores das respostas
+  showAnswers() {
+    const correct = document.getElementsByClassName('correct');
+    const incorrect = document.getElementsByClassName('incorrect');
+    correct[0].className = 'rightAnswer';
+    for (let i = 0; i <= incorrect.length; i += 1) {
+      incorrect[i].className = 'wrongAnswer';
+    }
   }
 
   handleOnClickResp() {
@@ -79,21 +96,24 @@ class GamePage extends React.Component {
     this.setState({
       timer: 0,
     });
+    this.showAnswers();
   }
 
   handleOnClickWrong() {
     this.setState({
       timer: 0,
     });
+    this.showAnswers();
   }
 
   render() {
     const {
       timer, correctAnswer, disabled, data, index, questoesAtuais,
-      nextQuestion } = this.state;
+      nextQuestion, link } = this.state;
     return (
       <div>
         <h3>{ timer }</h3>
+        { link ? <Redirect to="/feedback" /> : ''}
         {data.length > 0
           ? (
             <div>
@@ -104,28 +124,29 @@ class GamePage extends React.Component {
                 {data[index] ? data[index].question : ''}
               </h2>
             </div>) : ''}
-        {questoesAtuais.map((answer) => (
-          (answer === correctAnswer
-            ? (
-              <button
-                onClick={ this.handleOnClickResp }
-                data-testid="correct-answer"
-                type="button"
-                key={ answer }
-                disabled={ disabled }
-              >
-                { answer }
-              </button>)
-            : (
-              <button
-                onClick={ this.handleOnClickWrong }
-                data-testid="wrong-answer-index"
-                type="button"
-                key={ answer }
-                disabled={ disabled }
-              >
-                { answer }
-              </button>))
+        {questoesAtuais.map((answer, i) => ((answer === correctAnswer
+          ? (
+            <button
+              onClick={ this.handleOnClickResp }
+              data-testid="correct-answer"
+              type="button"
+              key={ answer }
+              disabled={ disabled }
+              className="correct"
+            >
+              { answer }
+            </button>)
+          : (
+            <button
+              onClick={ this.handleOnClickWrong }
+              data-testid={ `wrong-answer-${i}` }
+              type="button"
+              key={ answer }
+              disabled={ disabled }
+              className="incorrect"
+            >
+              { answer }
+            </button>))
         ))}
         { nextQuestion === true
           ? (
