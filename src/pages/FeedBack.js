@@ -4,7 +4,6 @@ import Header from '../component/Header';
 import InfoFeedback from '../component/InfoFeedback';
 import FeedbackMessage from '../component/FeedbackMessage';
 
-
 export default class FeedBack extends Component {
   render() {
     return (
