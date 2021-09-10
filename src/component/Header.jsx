@@ -19,9 +19,11 @@ class Header extends Component {
             src={ gravatarImage }
             alt="ícone do jogador"
           />
-          <p data-testid="header-score">
-            Placar:
-            { score }
+          <p>
+            Placar
+            <span data-testid="header-score">
+              { score }
+            </span>
           </p>
         </header>
       </div>
