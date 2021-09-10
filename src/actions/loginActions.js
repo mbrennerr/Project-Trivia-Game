@@ -4,6 +4,8 @@ export const FAZ_O_FETCH = 'FAZ_O_FETCH';
 export const SUCCESS_FETCH = 'SUCCESS_FETCH';
 export const ERROR_FETCH = 'ERROR_FETCH';
 export const SAVE_SCORE = 'SAVE_SCORE';
+export const ACERTOU = 'ACERTOU';
+export const SAVE_ASSERTIONS = 'SAVE_ASSERTIONS';
 const difficultyDict = {
   hard: 3,
   medium: 2,
@@ -47,6 +49,23 @@ export const saveScore = (score, difficulty, timer, state) => (dispatch) => {
   });
 };
 
+export const saveAssertions = (asertions, state) => (dispatch) => {
+  const BASE_ASSERTIONS = 1;
+  const payload = BASE_ASSERTIONS + asertions;
+  const localStorageObject = {
+    player: {
+      ...state,
+      asertions: payload,
+    },
+  };
+
+  localStorage.setItem('asertions', JSON.stringify(localStorageObject));
+  dispatch({
+    type: SAVE_ASSERTIONS,
+    payload,
+  });
+};
+
 export const fetchGravatar = (hash) => async (dispatch) => {
   dispatch(fazOFetch());
   try {
@@ -56,3 +75,8 @@ export const fetchGravatar = (hash) => async (dispatch) => {
     return dispatch(errorFetch());
   }
 };
+
+export const acertou = (payload) => ({
+  type: ACERTOU,
+  payload,
+});

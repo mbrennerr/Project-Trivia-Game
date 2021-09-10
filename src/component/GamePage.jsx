@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
-import { saveScore } from '../actions/loginActions';
+
+import { acertou, saveScore, saveAssertions } from '../actions/loginActions';
 import { shuffleArray } from '../service/questions';
 
 class GamePage extends React.Component {
@@ -16,12 +17,14 @@ class GamePage extends React.Component {
       nextQuestion: false,
       link: false,
       questions: 0,
+      acertos: 1,
     };
     this.getQuestions = this.getQuestions.bind(this);
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnClickResp = this.handleOnClickResp.bind(this);
     this.handleOnClickWrong = this.handleOnClickWrong.bind(this);
     this.showAnswers = this.showAnswers.bind(this);
+    this.sendToLocalStorage = this.sendToLocalStorage.bind(this);
   }
 
   async componentDidMount() {
@@ -88,15 +91,29 @@ class GamePage extends React.Component {
     }
   }
 
+  sendToLocalStorage() {
+    const { acertos } = this.state;
+    const state = localStorage.getItem('state');
+    const objState = JSON.parse(state);
+    /* console.log(objState); */
+    const playerAtualizado = { player:
+       { ...objState.player, assertions: acertos === 0 ? 1 : acertos } };
+    console.log(playerAtualizado);
+    localStorage.setItem('state', JSON.stringify(playerAtualizado));
+  }
+
   handleOnClickResp() {
-    const { infoPlayer, saveScoreLocal } = this.props;
-    const { score } = infoPlayer;
+    const { infoPlayer, saveScoreLocal, saveAssertionsLocal } = this.props;
+    const { score, assertions } = infoPlayer;
     const { data, index, timer } = this.state;
+    saveAssertionsLocal(assertions);
     saveScoreLocal(score, data[index].difficulty, timer, infoPlayer);
-    this.setState({
+    this.setState((prevState) => ({
       timer: 0,
-    });
+      acertos: prevState.acertos + 1,
+    }));
     this.showAnswers();
+    this.sendToLocalStorage();
   }
 
   handleOnClickWrong() {
@@ -104,6 +121,7 @@ class GamePage extends React.Component {
       timer: 0,
     });
     this.showAnswers();
+    /* this.sendToLocalStorage(); */
   }
 
   render() {
@@ -161,6 +179,8 @@ class GamePage extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
   saveScoreLocal:
   (score, difficulty, timer) => dispatch(saveScore(score, difficulty, timer)),
+  assertions: (payload) => dispatch(acertou(payload)),
+  saveAssertionsLocal: (assertions) => dispatch(saveAssertions(assertions)),
 });
 
 const mapStateToProps = (state) => ({
@@ -169,6 +189,7 @@ const mapStateToProps = (state) => ({
 
 GamePage.propTypes = {
   saveScoreLocal: PropTypes.func.isRequired,
+  saveAssertionsLocal: PropTypes.func.isRequired,
   infoPlayer: PropTypes.shape().isRequired,
 };
 
