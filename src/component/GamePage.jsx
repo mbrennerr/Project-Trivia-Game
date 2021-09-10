@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
-import { acertou, saveScore } from '../actions/loginActions';
+
+import { acertou, saveScore, saveAssertions } from '../actions/loginActions';
 import { shuffleArray } from '../service/questions';
 
 class GamePage extends React.Component {
@@ -102,9 +103,10 @@ class GamePage extends React.Component {
   }
 
   handleOnClickResp() {
-    const { infoPlayer, saveScoreLocal } = this.props;
-    const { score } = infoPlayer;
+    const { infoPlayer, saveScoreLocal, saveAssertionsLocal } = this.props;
+    const { score, assertions } = infoPlayer;
     const { data, index, timer } = this.state;
+    saveAssertionsLocal(assertions);
     saveScoreLocal(score, data[index].difficulty, timer, infoPlayer);
     this.setState((prevState) => ({
       timer: 0,
@@ -178,6 +180,7 @@ const mapDispatchToProps = (dispatch) => ({
   saveScoreLocal:
   (score, difficulty, timer) => dispatch(saveScore(score, difficulty, timer)),
   assertions: (payload) => dispatch(acertou(payload)),
+  saveAssertionsLocal: (assertions) => dispatch(saveAssertions(assertions)),
 });
 
 const mapStateToProps = (state) => ({
@@ -186,6 +189,7 @@ const mapStateToProps = (state) => ({
 
 GamePage.propTypes = {
   saveScoreLocal: PropTypes.func.isRequired,
+  saveAssertionsLocal: PropTypes.func.isRequired,
   infoPlayer: PropTypes.shape().isRequired,
 };
 
