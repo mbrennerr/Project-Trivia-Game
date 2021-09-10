@@ -17,10 +17,8 @@ class LoginComponent extends Component {
     };
     this.HandleOnChange = this.HandleOnChange.bind(this);
     this.HandleOnClick = this.HandleOnClick.bind(this);
-    // this.tokenForLocalStorage = this.tokenForLocalStorage.bind(this);
   }
 
-  // função para pegar o token via api
   componentDidMount() {
     getToken()
       .then((result) => this.setState({ token: result.token }));
