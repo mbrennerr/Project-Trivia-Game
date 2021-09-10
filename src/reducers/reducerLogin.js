@@ -1,4 +1,3 @@
-
 import { FETCH_GRAVATAR,
   FEZ_LOGIN,
   SAVE_SCORE,
