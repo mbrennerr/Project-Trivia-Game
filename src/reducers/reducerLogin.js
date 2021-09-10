@@ -1,8 +1,11 @@
-import { FETCH_GRAVATAR, FEZ_LOGIN, SAVE_SCORE } from '../actions/loginActions';
+import { FETCH_GRAVATAR,
+  FEZ_LOGIN,
+  SAVE_SCORE,
+  SAVE_ASSERTIONS } from '../actions/loginActions';
 
 const initialState = {
   nome: '',
-  assertions: '',
+  assertions: 0,
   score: 0,
   gravatarEmail: '',
   gravatarImage: '',
@@ -21,6 +24,10 @@ function reducerLogin(state = initialState, action) {
   case SAVE_SCORE:
     return {
       ...state, score: action.payload,
+    };
+  case SAVE_ASSERTIONS:
+    return {
+      ...state, assertions: action.payload,
     };
   default:
     return state;
